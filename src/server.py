@@ -16,14 +16,15 @@ def get_local_ip(ifname):
     import socket
     import fcntl
     import struct
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    ip = socket.inet_ntoa(fcntl.ioctl(
-        s.fileno(),
-        0x8915,
-        struct.pack('256s', ifname[:15])
-    )[20:24])
-
-    if ip == None:
+    ip = ""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        ip = socket.inet_ntoa(fcntl.ioctl(
+            s.fileno(),
+            0x8915,
+            struct.pack('256s', ifname[:15])
+        )[20:24])
+    except:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         ip = socket.gethostbyname(socket.gethostname())
 
