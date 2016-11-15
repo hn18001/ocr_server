@@ -1,7 +1,4 @@
 import sys
-import socket
-import fcntl
-import struct
 
 sys.path.append("./gen-py")
 from ocr_server import ocr_server
@@ -16,12 +13,21 @@ sys.path.append("./ocr")
 import ocr
 
 def get_local_ip(ifname):
+    import socket
+    import fcntl
+    import struct
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
+    ip = socket.inet_ntoa(fcntl.ioctl(
         s.fileno(),
         0x8915,
         struct.pack('256s', ifname[:15])
     )[20:24])
+
+    if ip == None:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        ip = socket.gethostbyname(socket.gethostname())
+
+    return ip
 
 class Handler:
     def __init__(self):
