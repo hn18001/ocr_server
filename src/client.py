@@ -1,25 +1,47 @@
+import sys
 import os
+import time
 
-import thriftpy
-from thriftpy.rpc import client_context
-from thriftpy.transport import TFramedTransportFactory
+sys.path.append("./gen-py")
+from ocr_server import ocr_server
+from ocr_server.ttypes import *
 
-ocr_thrift = thriftpy.load("ocr.thrift", module_name="ocr_thrift")
+from thrift.transport import TSocket
+from thrift.transport import TTransport
+from thrift.protocol import TBinaryProtocol
+from thrift.server import TServer
+
 
 def main():
-    with client_context(ocr_thrift.ocr_server, '127.0.0.1', 6000, trans_factory=TFramedTransportFactory(), socket_timeout=12000) as ocr_server:
-        datas = []
-        for root, dir_names, file_names in os.walk("./test"):
-            for file_name in file_names:
-                f = open(os.path.join(root, file_name), 'rb')
-                data = f.read()
-                datas.append(data)
+    transport = TSocket.TSocket('localhost', 6000)
 
-        results = ocr_server.scene_ocr(datas, True)
+    # Buffering is critical, Raw sockets are very slow
+    transport = TTransport.TBufferedTransport(transport)
 
-        for result in results:
-            print result.result, result.roi_left, result.roi_top, result.roi_width, result.roi_height
+    # Wrap in protocol
+    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+
+    # Create a client to use the protocol encoder
+    client = ocr_server.Client(protocol)
+
+    # Connect!
+    transport.open()
+
+    images = []
+    for root, dir_names, file_names in os.walk("../test1"):
+        for file_name in file_names:
+            f = open(os.path.join(root,file_name), 'r')
+            image = f.read()
+            f.close()
+            images.append(image)
+
+    start = time.time()
+    results = client.scene_ocr(images, True)
+
+    for result in results:
+        print result.result
+
+    print("ocr's time:%f" %(time.time()-start))
 
 if __name__ == "__main__":
     main()
-
