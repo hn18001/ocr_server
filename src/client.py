@@ -13,7 +13,7 @@ from thrift.server import TServer
 
 
 def main():
-    transport = TSocket.TSocket('localhost', 6000)
+    transport = TSocket.TSocket('10.123.16.51', 6000)
 
     # Buffering is critical, Raw sockets are very slow
     transport = TTransport.TBufferedTransport(transport)
@@ -28,7 +28,7 @@ def main():
     transport.open()
 
     images = []
-    for root, dir_names, file_names in os.walk("../test1"):
+    for root, dir_names, file_names in os.walk("/data/heneng/images/scene/save_img/"):
         for file_name in file_names:
             f = open(os.path.join(root,file_name), 'r')
             image = f.read()
