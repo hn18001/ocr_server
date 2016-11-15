@@ -1,4 +1,7 @@
 import sys
+import socket
+import fcntl
+import struct
 
 sys.path.append("./gen-py")
 from ocr_server import ocr_server
@@ -11,6 +14,14 @@ from thrift.server import TServer
 
 sys.path.append("./ocr")
 import ocr
+
+def get_local_ip(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,
+        struct.pack('256s', ifname[:15])
+    )[20:24])
 
 class Handler:
     def __init__(self):
@@ -44,8 +55,10 @@ def main():
     handler = Handler()
     processor = ocr_server.Processor(handler)
     #addr = "localhost"
-    addr = "10.1.243.161"
-    transport = TSocket.TServerSocket(addr, port=3000)
+    addr = get_local_ip("eth0")
+    port = 6000
+    print("Server IP: %s, port: %d" %(addr, port))
+    transport = TSocket.TServerSocket(addr, port=port)
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TBinaryProtocol.TBinaryProtocolFactory()
 
