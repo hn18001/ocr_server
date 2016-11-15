@@ -1,3 +1,4 @@
+start = os.clock()
 require('nn')
 
 require('cutorch')
@@ -7,7 +8,7 @@ require('optim')
 require('paths')
 require('nngraph')
 
---Find the module in the dir of '../src'
+-- Set the modules' path and the library's path
 package.path = package.path .. ";/data/heneng/work/QYDnnOCR/trunk/src/?.lua;/data/heneng/work/QYDnnOCR/trunk/third_party/lmdb-lua-ffi/src/?.lua;"
 package.cpath = package.cpath .. ";/data/heneng/work/QYDnnOCR/trunk/src/?.so"
 
@@ -22,8 +23,9 @@ require('SharedParallelTable')
 
 require('lfs')
 
+print("Load all models: ".. (os.clock()-start))
+
 function make_dict(duri, id2char_tb)
-    print('make dict ...')
     fp = io.open(duri, 'r')
     assert(fp)
     cc = 0
@@ -33,18 +35,13 @@ function make_dict(duri, id2char_tb)
         id2char_tb[cc] = line
     end
     fp:close()
-    print('dict size:',#id2char_tb)
 end
 
 start = os.clock()
 arg = {}
 arg[1] = 3
-arg[2] = "/data/heneng/images/baidu-gt/sample_baidu_subtitle/loc_test/"
-arg[3] = "./result.txt"
-arg[4] = "snapshot_138000.t7"
+arg[2] = "snapshot_138000.t7"
 local dev_id = tonumber(arg[1])
-local path = arg[2]
-local resuri = arg[3]
 local wordlisturi = '/data/heneng/work/QYDnnOCR/trunk/src/word_3567.txt'
 id2char_tb = {}
 make_dict(wordlisturi, id2char_tb)
@@ -65,7 +62,7 @@ start = os.clock()
 local modelDir = '/data/heneng/work/QYDnnOCR/trunk/model/'
 paths.dofile(paths.concat(modelDir, 'config.lua'))
 --local modelLoadPath = paths.concat(modelDir, 'snapshot_174000.t7')i
-local modelName = arg[4]
+local modelName = arg[2]
 local modelLoadPath = paths.concat(modelDir,modelName) 
 print("dofile config.lua: ".. (os.clock() - start))
 start = os.clock()
