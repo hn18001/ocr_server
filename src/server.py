@@ -44,14 +44,15 @@ def main():
     handler = Handler()
     processor = ocr_server.Processor(handler)
     #addr = "localhost"
-    addr = "10.123.16.51"
-    transport = TSocket.TServerSocket(addr, port=6000)
+    addr = "10.1.243.161"
+    transport = TSocket.TServerSocket(addr, port=3000)
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TBinaryProtocol.TBinaryProtocolFactory()
 
     #server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
     from thrift.server import TProcessPoolServer
     server = TProcessPoolServer.TProcessPoolServer(processor, transport, tfactory, pfactory) # When there is no call, the sub-thread will not be awaken.
+    server.setNumWorkers(3) # Set the number of processes.
     #server = TServer.TForkingServer(processor, transport, tfactory, pfactory)
 
     print "Starting the server"
