@@ -119,7 +119,7 @@ def save_scene_boxes(file_stream_list, index, scene_boxes):
 
     return results
 
-def scene_location(file_list, index):
+def scene_location(file_list):
     print "Entering scene_location()..."
     hd = CNNClient(ip="10.15.208.61", port=6800)
 
