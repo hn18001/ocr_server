@@ -2,7 +2,8 @@
 
 import traceback,sys
 import time
-#import cv2
+sys.path.append("/usr/lib/python2.7/dist-packages/")
+import cv2
 import os
 import numpy as np
 import thriftpy
@@ -78,7 +79,7 @@ class CNNClient:
 
 def create_opencv_image_from_stream(stream):
     img_array = np.asarray(bytearray(stream), dtype=np.uint8)
-    return cv2.imdecode(img_array, cv2.IMREAD_UNCHANGED)
+    return cv2.imdecode(img_array, cv2.IMREAD_COLOR)
 
 def create_pil_image_from_buffer(buf):
     import cStringIO
@@ -124,6 +125,7 @@ def scene_location(file_list):
     print len(file_list)
     retlist = hd.DoPostProcess(file_list)
 
+    print "len of retlist: ", len(retlist)
     results = []
     for j in range(len(retlist)):
         ret = retlist[j]
@@ -134,11 +136,13 @@ def scene_location(file_list):
             if i == 0:
                 import util
                 img = create_opencv_image_from_stream(roi)
+                print img.shape
+                cv2.imwrite("./mask.jpg", img)
                 scene_boxes = util.get_scene_box(img)
                 print "scene boxes' len:", len(scene_boxes)
                 files = save_scene_boxes(file_list, j, scene_boxes)
                 results.append(files)
-            
+
     return results
 
 def crop_img(file_name):

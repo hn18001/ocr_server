@@ -1,3 +1,4 @@
+import os
 import sys
 
 sys.path.append("./gen-py")
@@ -11,6 +12,8 @@ from thrift.server import TServer
 
 sys.path.append("./ocr")
 import ocr
+sys.path.append("./location")
+import location
 
 def get_local_ip(ifname):
     import socket
@@ -78,5 +81,25 @@ def main():
     print "Starting the server"
     server.serve()
 
+def test_location():
+    path = "../test/"
+
+    file_list = []
+    for root, dir_names, file_names in os.walk(path):
+        for file_name in file_names:
+            full_name = os.path.join(root, file_name)
+            print full_name
+            with open(full_name, 'rb') as f:
+                buf = f.read()
+                file_list.append(buf)
+
+    print "len of file_list: ", len(file_list)
+    results = location.scene_location(file_list)
+
+    for result in results:
+        for file in result:
+            print file
+
 if __name__ == "__main__":
-    main()
+    #main()
+    test_location()
