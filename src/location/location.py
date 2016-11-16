@@ -2,8 +2,6 @@
 
 import traceback,sys
 import time
-sys.path.append("/usr/lib/python2.7/dist-packages/")
-import cv2
 import os
 import numpy as np
 import thriftpy
@@ -13,6 +11,8 @@ CNN_i2i_thrift = thriftpy.load('CNN_image2image.thrift', module_name="CNN_image2
 import multiprocessing
 from multiprocessing import Pool
 from PIL import Image
+sys.path.append("/usr/lib/python2.7/dist-packages/")
+import cv2
 
 class CNNClient:
     def __init__(self, ip="10.15.208.61", port=6800):
@@ -83,7 +83,7 @@ def create_opencv_image_from_stream(stream):
 
 def create_pil_image_from_buffer(buf):
     import cStringIO
-    im = Image.open(cStringIO.stringIO(buf))
+    im = Image.open(cStringIO.StringIO(buf))
     return im
 
 def save_scene_boxes(file_stream_list, index, scene_boxes):
@@ -105,10 +105,11 @@ def save_scene_boxes(file_stream_list, index, scene_boxes):
         height = height / 500.0 * src_img.size[1]
         crop_img = src_img.crop((left, top, left + width, top + height))
 
+        import os
         pid = os.getpid()
-        path_prefix = "./result/" + str(pid)
-        if not os.path.exists(path):
-            os.command("mkdir " + path_prefix)
+        path_prefix = "../result/" + str(pid)
+        if not os.path.exists(path_prefix):
+            os.system("mkdir " + path_prefix)
 
         save_name = path_prefix + "/" + str(index) + "_" + str(i) + ".jpg"
         print save_name
@@ -118,7 +119,7 @@ def save_scene_boxes(file_stream_list, index, scene_boxes):
 
     return results
 
-def scene_location(file_list):
+def scene_location(file_list, index):
     print "Entering scene_location()..."
     hd = CNNClient(ip="10.15.208.61", port=6800)
 
