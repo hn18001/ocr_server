@@ -119,10 +119,31 @@ def save_scene_boxes(file_stream_list, index, scene_boxes):
 
     return results
 
+def crop_imgs(file_list):
+    rlt_list = []
+    for image_file in file_list:
+        im = create_pil_image_from_buffer(image_file)
+        width, height = im.size
+        print width, height
+
+        crop_im = im.crop((0, 2*height/3, width, height))
+        print crop_im.size
+        import io
+        im_buffer = io.BytesIO()
+        crop_im.save(im_buffer, format='JPEG')
+        print "P1"
+        contents = im_buffer.getvalue()
+        im_buffer.close()
+
+        rlt_list.append(contents)
+
+    return rlt_list
+
 def scene_location(file_list):
     print "Entering scene_location()..."
     hd = CNNClient(ip="10.15.208.61", port=6800)
 
+    file_list = crop_imgs(file_list)
     print len(file_list)
     retlist = hd.DoPostProcess(file_list)
 
@@ -145,14 +166,3 @@ def scene_location(file_list):
                 results.append(files)
 
     return results
-
-def crop_img(file_name):
-    from PIL import Image
-    im = Image.open(file_name)
-    width, height = im.size
-
-    crop_im = im.crop((0, 2*height/3, width, height))
-    basename = os.path.basename(file_name)
-    tempfile = "./temp/" + basename
-    crop_im.save(tempfile)
-    return tempfile
