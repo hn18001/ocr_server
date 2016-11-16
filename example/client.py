@@ -11,7 +11,6 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 
-
 def main():
     addr = "10.123.16.51"
     port = 6000
@@ -39,6 +38,7 @@ def main():
             images.append(image)
 
     start = time.time()
+    # Call the interface to scene OCR.
     results = client.scene_ocr(images, True)
 
     for result in results:
