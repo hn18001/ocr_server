@@ -9,9 +9,12 @@ require('paths')
 require('nngraph')
 
 -- Set the modules' path and the library's path
-package.path = package.path .. ";/data/heneng/work/QYDnnOCR/trunk/src/?.lua;/data/heneng/work/QYDnnOCR/trunk/third_party/lmdb-lua-ffi/src/?.lua;"
-package.cpath = package.cpath .. ";/data/heneng/work/QYDnnOCR/trunk/src/?.so"
+local ocr_project_path = "/data/heneng/work/QYDnnOCR/tags/REL-1.0.0/"
+package.path = package.path..";"..ocr_project_path.."/src/?.lua;"..ocr_project_path.."/third_party/lmdb-lua-ffi/src/?.lua;"
+package.cpath = package.cpath..";"..ocr_project_path.."/src/?.so;"
 
+print(package.path)
+print(package.cpath)
 require('libcrnn')
 require('utilities')
 require('inference')
@@ -42,7 +45,7 @@ arg = {}
 arg[1] = 3
 arg[2] = "snapshot_138000.t7"
 local dev_id = tonumber(arg[1])
-local wordlisturi = '/data/heneng/work/QYDnnOCR/trunk/src/word_3567.txt'
+local wordlisturi = ocr_project_path..'/src/word_3567.txt'
 id2char_tb = {}
 make_dict(wordlisturi, id2char_tb)
 
@@ -59,7 +62,7 @@ start = os.clock()
 --local modelDir = '/data/zhangyg/work_torch/model/crnn/3567_5m_4color_7font_shadow_480'
 --paths.dofile(paths.concat(modelDir, 'config.lua'))
 --local modelLoadPath = paths.concat(modelDir, 'snapshot_168000.t7')
-local modelDir = '/data/heneng/work/QYDnnOCR/trunk/model/'
+local modelDir = ocr_project_path..'/model/'
 paths.dofile(paths.concat(modelDir, 'config.lua'))
 --local modelLoadPath = paths.concat(modelDir, 'snapshot_174000.t7')i
 local modelName = arg[2]
