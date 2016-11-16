@@ -32,7 +32,7 @@ def main():
     images = []
     for root, dir_names, file_names in os.walk("../test2"):
         for file_name in file_names:
-            f = open(os.path.join(root,file_name), 'r')
+            f = open(os.path.join(root,file_name), 'rb')
             image = f.read()
             f.close()
             images.append(image)
