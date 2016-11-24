@@ -85,10 +85,10 @@ def main():
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TBinaryProtocol.TBinaryProtocolFactory()
 
-    server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
-    #from thrift.server import TProcessPoolServer
-    #server = TProcessPoolServer.TProcessPoolServer(processor, transport, tfactory, pfactory) # When there is no call, the sub-thread will not be awaken.
-    #server.setNumWorkers(3) # Set the number of processes.
+    #server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
+    from thrift.server import TProcessPoolServer
+    server = TProcessPoolServer.TProcessPoolServer(processor, transport, tfactory, pfactory) # When there is no call, the sub-thread will not be awaken.
+    server.setNumWorkers(3) # Set the number of processes.
     #server = TServer.TForkingServer(processor, transport, tfactory, pfactory)
 
     print "Starting the server"
