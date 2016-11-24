@@ -149,6 +149,7 @@ def scene_location(file_list):
 
     print "len of retlist: ", len(retlist)
     results = []
+    results_boxes = []
     for j in range(len(retlist)):
         ret = retlist[j]
         for i in range(len(ret)):
@@ -159,10 +160,11 @@ def scene_location(file_list):
                 import util
                 img = create_opencv_image_from_stream(roi)
                 print img.shape
-                cv2.imwrite("./mask.jpg", img)
+                #cv2.imwrite("./mask.jpg", img)
                 scene_boxes = util.get_scene_box(img)
                 print "scene boxes' len:", len(scene_boxes)
                 files = save_scene_boxes(file_list, j, scene_boxes)
                 results.append(files)
+                results_boxes.append(scene_boxes)
 
-    return results
+    return results, results_boxes

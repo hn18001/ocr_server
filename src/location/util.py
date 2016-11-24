@@ -85,7 +85,7 @@ def get_scene_box(src_img):
 
         src_img = cv2.rectangle(src_img, (left, top), (right, bottom), (0, 0, 255), 3)
 
-    cv2.imwrite("./scene_img.jpg", src_img)
+    #cv2.imwrite("./scene_img.jpg", src_img)
 
     return possible_scenes
 
