@@ -44,19 +44,32 @@ class Handler:
         rlt_results = []
         for image in images:
             ocr_results = ""
+            left = 0
+            top = 0
+            width = 0
+            height = 0
             if b_location == True:
                 file_list = []
                 file_list.append(image)
                 # The return of scene_location is a list of a scene image list,
                 # it means that a source image may have many scene images.
-                loc_results = location.scene_location(file_list)
+                print "Before scene_location()..."
+                loc_results, boxes_results = location.scene_location(file_list)
 
-                print "len of loc_results:", len(loc_results)
-                print loc_results
+                print "Len of loc_results:", len(loc_results)
+                print "len of boxes_results:", len(boxes_results)
                 for loc_result in loc_results:
+                    print "loc_result:", loc_result
                     for scene_result in loc_result:
+                        print "Before ocr()..."
                         result = ocr.ocr(scene_result)
                         ocr_results = ocr_results + result + ";"
+                        print "ocr_results' :", ocr_results
+                        if len(boxes_results[0])> 0:
+                            left = boxes_results[0][0]['left']
+                            top = boxes_results[0][0]['top']
+                            width = boxes_results[0][0]['width']
+                            height = boxes_results[0][0]['height']
             else:
                 pid = os.getpid()
                 file_prefix = "../result/" + str(pid)
@@ -68,8 +81,13 @@ class Handler:
                     f.write(image)
 
                 ocr_results = ocr.ocr(save_name)
+                # No location, the rect is set to 0
+                left = 0
+                top = 0
+                width = 0
+                height = 0
 
-            rlt = ocr_result(result=ocr_results, roi_left=0, roi_top=0, roi_width=0, roi_height=0)
+            rlt = ocr_result(result=ocr_results, roi_left=left, roi_top=top, roi_width=width, roi_height=height)
             rlt_results.append(rlt)
 
         return rlt_results
@@ -88,7 +106,8 @@ def main():
     #server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
     from thrift.server import TProcessPoolServer
     server = TProcessPoolServer.TProcessPoolServer(processor, transport, tfactory, pfactory) # When there is no call, the sub-thread will not be awaken.
-    server.setNumWorkers(3) # Set the number of processes.
+    worker_num = 6
+    server.setNumWorkers(worker_num) # Set the number of processes.
     #server = TServer.TForkingServer(processor, transport, tfactory, pfactory)
 
     print "Starting the server"
@@ -108,7 +127,7 @@ def test_location():
                 file_list.append(buf)
 
             print "len of file_list: ", len(file_list)
-            results = location.scene_location(file_list)
+            results, boxes = location.scene_location(file_list)
 
             for result in results:
                 for file in result:
