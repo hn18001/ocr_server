@@ -106,7 +106,7 @@ def main():
     #server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
     from thrift.server import TProcessPoolServer
     server = TProcessPoolServer.TProcessPoolServer(processor, transport, tfactory, pfactory) # When there is no call, the sub-thread will not be awaken.
-    worker_num = 6
+    worker_num = 8
     server.setNumWorkers(worker_num) # Set the number of processes.
     #server = TServer.TForkingServer(processor, transport, tfactory, pfactory)
 
