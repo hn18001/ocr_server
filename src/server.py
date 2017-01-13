@@ -54,7 +54,10 @@ class Handler:
                 # The return of scene_location is a list of a scene image list,
                 # it means that a source image may have many scene images.
                 print "Before scene_location()..."
+                import time
+                start_time = time.time()
                 loc_results, boxes_results = location.scene_location(file_list)
+                print("Location's time: " %(time.time()-start_time))
 
                 print "Len of loc_results:", len(loc_results)
                 print "len of boxes_results:", len(boxes_results)
