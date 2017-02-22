@@ -23,5 +23,5 @@ def ocr(img_path):
     return result
 
 if __name__ == "__main__":
-    file_name = "../../result/0.jpg"
+    file_name = "../result/11267/0_0.jpg"
     print ocr(file_name)
