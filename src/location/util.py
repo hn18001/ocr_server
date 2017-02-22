@@ -49,7 +49,6 @@ def remove_area(img_width, img_height, b_boxes):
     width_thresh = 20
 
     possible_scenes = []
-    print b_boxes
     for b_box in b_boxes:
         left = b_box['left']
         width = b_box['width']
@@ -58,7 +57,6 @@ def remove_area(img_width, img_height, b_boxes):
         width_middle = left + width / 2
         width_gap = img_width / 2 - width_middle
 
-        print width_gap
         if abs(width_gap) < width_thresh and area > area_thresh:
             possible_scenes.append(b_box)
 

@@ -21,7 +21,6 @@ class CNNClient:
         try:
             self.client = make_client(CNN_i2i_thrift.CNNPredictService,
                     ip, port,trans_factory=TFramedTransportFactory(), timeout=12000) ## timeout ms
-            print ip+':'+str(port)
 
         except Exception as  err:
             print err
@@ -38,18 +37,12 @@ class CNNClient:
 
         ret = []
         try:
-            print '----'
             reslst = self.client.predict(reqlst)
-            print '----', len(reslst)
             #print res
             for i in range(len(reslst)):
                 roiimglst = []
                 ## get mask image
                 maskres = reslst[i].maskResult
-                print type(maskres.outputImage), len(maskres.outputImage)
-                print maskres.imageChannel
-                print maskres.imageWidth
-                print maskres.imageHeight
                 roiimglst.append(maskres.outputImage)
 
                 ## get roi image
@@ -60,8 +53,6 @@ class CNNClient:
                     resc= roi.imageChannel
                     resw= roi.imageWidth
                     resh= roi.imageHeight
-                    print 'c,h,w',resc,resh,resw
-                    print 'size:',len(val)
 
                     roiimglst.append(val)
                 ret.append(roiimglst)
@@ -88,7 +79,6 @@ def create_pil_image_from_buffer(buf):
 
 def save_scene_boxes(file_stream_list, index, scene_boxes):
     src_img = create_pil_image_from_buffer(file_stream_list[index])
-    print "image size:", src_img.size
 
     results = []
 
@@ -124,14 +114,11 @@ def crop_imgs(file_list):
     for image_file in file_list:
         im = create_pil_image_from_buffer(image_file)
         width, height = im.size
-        print width, height
 
         crop_im = im.crop((0, 2*height/3, width, height))
-        print crop_im.size
         import io
         im_buffer = io.BytesIO()
         crop_im.save(im_buffer, format='JPEG')
-        print "P1"
         contents = im_buffer.getvalue()
         im_buffer.close()
 
@@ -140,14 +127,11 @@ def crop_imgs(file_list):
     return rlt_list
 
 def scene_location(file_list):
-    print "Entering scene_location()..."
     hd = CNNClient(ip="10.15.208.61", port=6800)
 
     file_list = crop_imgs(file_list)
-    print len(file_list)
     retlist = hd.DoPostProcess(file_list)
 
-    print "len of retlist: ", len(retlist)
     results = []
     results_boxes = []
     for j in range(len(retlist)):
@@ -159,10 +143,8 @@ def scene_location(file_list):
             if i == 0:
                 import util
                 img = create_opencv_image_from_stream(roi)
-                print img.shape
                 #cv2.imwrite("./mask.jpg", img)
                 scene_boxes = util.get_scene_box(img)
-                print "scene boxes' len:", len(scene_boxes)
                 files = save_scene_boxes(file_list, j, scene_boxes)
                 results.append(files)
                 results_boxes.append(scene_boxes)

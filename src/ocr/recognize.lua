@@ -22,7 +22,7 @@ function recognize(img_path)
         end
     end
     print(resstr)
-    print(string.format('time cost: %.2fs\n', os.clock() - t0))
+    print(string.format('ocr\'s time : %.2fs', os.clock() - t0))
         
     return resstr
 end
