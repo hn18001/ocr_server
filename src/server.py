@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 sys.path.append("./gen-py")
 from ocr_server import ocr_server
@@ -43,6 +44,7 @@ class Handler:
     def scene_ocr(self, images, b_location):
         rlt_results = []
         for image in images:
+            total_time = time.time()
             ocr_results = ""
             left = 0
             top = 0
@@ -54,20 +56,15 @@ class Handler:
                 # The return of scene_location is a list of a scene image list,
                 # it means that a source image may have many scene images.
                 print "Before scene_location()..."
-                import time
                 start_time = time.time()
                 loc_results, boxes_results = location.scene_location(file_list)
-                print("Location's time: %5f" %(time.time()-start_time))
+                print("location's time: %.2fs" %(time.time()-start_time))
 
-                print "Len of loc_results:", len(loc_results)
-                print "len of boxes_results:", len(boxes_results)
                 for loc_result in loc_results:
-                    print "loc_result:", loc_result
                     for scene_result in loc_result:
                         print "Before ocr()..."
                         result = ocr.ocr(scene_result)
                         ocr_results = ocr_results + result + ";"
-                        print "ocr_results' :", ocr_results
                         if len(boxes_results[0])> 0:
                             left = boxes_results[0][0]['left']
                             top = boxes_results[0][0]['top']
@@ -92,6 +89,8 @@ class Handler:
 
             rlt = ocr_result(result=ocr_results, roi_left=left, roi_top=top, roi_width=width, roi_height=height)
             rlt_results.append(rlt)
+
+            print("total time: %.2fs\n" %(time.time()-total_time))
 
         return rlt_results
 
