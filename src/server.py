@@ -57,7 +57,7 @@ class Handler:
                 import time
                 start_time = time.time()
                 loc_results, boxes_results = location.scene_location(file_list)
-                print("Location's time: " %(time.time()-start_time))
+                print("Location's time: %5f" %(time.time()-start_time))
 
                 print "Len of loc_results:", len(loc_results)
                 print "len of boxes_results:", len(boxes_results)
