@@ -13,7 +13,7 @@ from thrift.server import TServer
 
 def main():
     addr = "10.123.16.51"
-    port = 6000
+    port = 6100
     print("Linking to: %s:%s" %(addr, port))
     transport = TSocket.TSocket(addr, port)
 
@@ -30,7 +30,7 @@ def main():
     transport.open()
 
     images = []
-    for root, dir_names, file_names in os.walk("../test2"):
+    for root, dir_names, file_names in os.walk("../test"):
         for file_name in file_names:
             f = open(os.path.join(root,file_name), 'rb')
             image = f.read()

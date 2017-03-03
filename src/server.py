@@ -13,6 +13,7 @@ from thrift.server import TServer
 
 sys.path.append("./ocr")
 import ocr
+import get_line_complex_lection as get_line
 sys.path.append("./location")
 import location
 
@@ -50,36 +51,21 @@ class Handler:
             top = 0
             width = 0
             height = 0
+
+            pid = os.getpid()
+            file_prefix = "../result/" + str(pid)
+            if not os.path.exists(file_prefix):
+                os.system("mkdir " + file_prefix)
+            save_name = file_prefix + "/src_img.jpg"
+            with open(save_name, 'w') as f:
+                f.write(image)
             if b_location == True:
-                file_list = []
-                file_list.append(image)
-                # The return of scene_location is a list of a scene image list,
-                # it means that a source image may have many scene images.
-                print "Before scene_location()..."
-                start_time = time.time()
-                loc_results, boxes_results = location.scene_location(file_list)
-                print("location's time: %.2fs" %(time.time()-start_time))
-
-                for loc_result in loc_results:
-                    for scene_result in loc_result:
-                        print "Before ocr()..."
-                        result = ocr.ocr(scene_result)
-                        ocr_results = ocr_results + result + ";"
-                        if len(boxes_results[0])> 0:
-                            left = boxes_results[0][0]['left']
-                            top = boxes_results[0][0]['top']
-                            width = boxes_results[0][0]['width']
-                            height = boxes_results[0][0]['height']
+                ocr_results = ocr.seg_and_ocr(save_name)
+                left = 0
+                top = 0
+                width = 0
+                height = 0
             else:
-                pid = os.getpid()
-                file_prefix = "../result/" + str(pid)
-                if not os.path.exists(file_prefix):
-                    os.system("mkdir " + file_prefix)
-
-                save_name = file_prefix + "/src_img.jpg"
-                with open(save_name, 'w') as f:
-                    f.write(image)
-
                 ocr_results = ocr.ocr(save_name)
                 # No location, the rect is set to 0
                 left = 0
@@ -99,7 +85,7 @@ def main():
     processor = ocr_server.Processor(handler)
     #addr = "localhost"
     addr = get_local_ip("eth0")
-    port = 6000
+    port = 6100
     print("Server IP: %s, port: %d" %(addr, port))
     transport = TSocket.TServerSocket(addr, port=port)
     tfactory = TTransport.TBufferedTransportFactory()
